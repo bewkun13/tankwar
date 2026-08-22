@@ -1,11 +1,12 @@
 const API_BASE = window.TANK_RIVALS_API || '';
 const STORAGE_KEY = 'tank-rivals-player-v2';
 const BATCH_MS = 30_000;
-const defaults = { side: 'thailand', totalShots: 0, pending: { thailand: 0, myanmar: 0 }, sessionId: crypto.randomUUID() };
+const defaults = { side: 'thailand', pending: { thailand: 0, myanmar: 0 }, cachedScores: { thailand: 0, myanmar: 0 }, sessionId: crypto.randomUUID() };
 let state = loadState();
+let sessionShots = 0;
 let secondsLeft = 30;
 let sending = false;
-let displayedScores = { thailand: 0, myanmar: 0 };
+let displayedScores = { ...state.cachedScores };
 
 const $ = id => document.getElementById(id);
 const format = number => Number(number || 0).toLocaleString('en-US');
@@ -17,13 +18,13 @@ const leaders = {
 function loadState(){
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return { ...defaults, ...saved, pending: { ...defaults.pending, ...(saved?.pending || {}) }, sessionId: saved?.sessionId || crypto.randomUUID() };
+    return { ...defaults, ...saved, pending: { ...defaults.pending, ...(saved?.pending || {}) }, cachedScores: { ...defaults.cachedScores, ...(saved?.cachedScores || {}) }, sessionId: saved?.sessionId || crypto.randomUUID() };
   } catch { return { ...defaults, pending: { ...defaults.pending } }; }
 }
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function pendingTotal(){ return state.pending.thailand + state.pending.myanmar; }
 function renderPlayer(){
-  $('yourShots').textContent = format(state.totalShots);
+  $('yourShots').textContent = format(sessionShots);
   $('pendingShots').textContent = format(pendingTotal());
   const thai = state.side === 'thailand';
   $('sideLabel').innerHTML = `<i class="mini-flag ${thai ? 'flag-th' : 'flag-mm'}"></i> ${thai ? 'THAILAND' : 'MYANMAR'}`;
@@ -42,7 +43,7 @@ function renderLeaders(){
   $('mmLeaders').innerHTML = leaders.myanmar.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
 }
 function fire(){
-  state.totalShots += 1; state.pending[state.side] += 1; displayedScores[state.side] += 1; saveState(); renderPlayer(); renderGlobal();
+  sessionShots += 1; state.pending[state.side] += 1; displayedScores[state.side] += 1; state.cachedScores = { ...displayedScores }; saveState(); renderPlayer(); renderGlobal();
   popScore('yourShots'); popScore(state.side === 'thailand' ? 'thScore' : 'mmScore'); popScore('totalScore');
   $('game').classList.remove('arena-hit'); void $('game').offsetWidth; $('game').classList.add('arena-hit');
   $('fireButton').classList.add('firing'); setTimeout(() => $('fireButton').classList.remove('firing'), 90);
@@ -58,7 +59,7 @@ async function refreshScores(){
     if (!response.ok) throw new Error('score fetch failed');
     const data = await response.json();
     displayedScores = { thailand:Number(data.thailand || 0) + state.pending.thailand, myanmar:Number(data.myanmar || 0) + state.pending.myanmar };
-    renderGlobal();
+    state.cachedScores = { ...displayedScores }; saveState(); renderGlobal();
     if (Number.isInteger(data.playersOnline)) $('online').textContent = format(data.playersOnline);
   } catch { $('syncStatus').textContent = navigator.onLine ? 'ยังเชื่อมต่อไม่ได้' : 'ออฟไลน์ — เก็บแต้มไว้แล้ว'; }
 }
