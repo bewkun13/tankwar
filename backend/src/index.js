@@ -1,4 +1,4 @@
-const SIDES = new Set(['thailand', 'myanmar']);
+const SIDES = new Set(['thailand', 'cambodia']);
 const json = (body, status = 200, extra = {}) => new Response(JSON.stringify(body), { status, headers: { 'content-type':'application/json; charset=utf-8', 'cache-control':'no-store', ...extra } });
 
 export class ScoreCounter {
@@ -6,24 +6,24 @@ export class ScoreCounter {
   async fetch(request) {
     const url = new URL(request.url);
     if (request.method === 'GET' && url.pathname === '/scores') {
-      const scores = (await this.state.storage.get('scores')) || { thailand:0, myanmar:0 };
-      return json({ ...scores, total:scores.thailand + scores.myanmar });
+      const scores = (await this.state.storage.get('scores')) || { thailand:0, cambodia:0 };
+      return json({ ...scores, total:scores.thailand + scores.cambodia });
     }
     if (request.method === 'POST' && url.pathname === '/increment') {
       const { side, shots } = await request.json();
-      const scores = (await this.state.storage.get('scores')) || { thailand:0, myanmar:0 };
+      const scores = (await this.state.storage.get('scores')) || { thailand:0, cambodia:0 };
       scores[side] += shots;
       await this.state.storage.put('scores', scores);
       await this.persist(scores);
-      return json({ accepted:shots, scores:{ ...scores, total:scores.thailand + scores.myanmar } });
+      return json({ accepted:shots, scores:{ ...scores, total:scores.thailand + scores.cambodia } });
     }
     return json({ error:'not_found' }, 404);
   }
   async persist(scores) {
     if (!this.env.DB) return;
-    await this.env.DB.prepare(`INSERT INTO score_snapshots (id, thailand, myanmar, updated_at)
-      VALUES (1, ?, ?, unixepoch()) ON CONFLICT(id) DO UPDATE SET thailand=excluded.thailand, myanmar=excluded.myanmar, updated_at=excluded.updated_at`)
-      .bind(scores.thailand, scores.myanmar).run();
+    await this.env.DB.prepare(`INSERT INTO score_snapshots (id, thailand, cambodia, updated_at)
+      VALUES (1, ?, ?, unixepoch()) ON CONFLICT(id) DO UPDATE SET thailand=excluded.thailand, cambodia=excluded.cambodia, updated_at=excluded.updated_at`)
+      .bind(scores.thailand, scores.cambodia).run();
   }
 }
 
@@ -52,7 +52,7 @@ export default {
       let payload;
       try { payload = await request.json(); } catch { return json({ error:'invalid_json' }, 400, cors); }
       if (!payload || !SIDES.has(payload.side) || !Number.isInteger(payload.shots) || payload.shots <= 0 || payload.shots > Number(env.MAX_BATCH_SHOTS || 300)) {
-        return json({ error:'invalid_payload', detail:'side must be thailand|myanmar; shots must be an integer within the allowed batch limit' }, 400, cors);
+        return json({ error:'invalid_payload', detail:'side must be thailand|cambodia; shots must be an integer within the allowed batch limit' }, 400, cors);
       }
       const ip = request.headers.get('cf-connecting-ip') || 'local';
       const key = await sha256(`${ip}:${sessionId}`);

@@ -1,4 +1,4 @@
-# Tank Rivals — Thailand vs Myanmar
+# Tank Rivals — Thailand vs Cambodia
 
 เกมคลิกสไตล์ arcade สำหรับความบันเทิงเท่านั้น ไม่มีการเมืองและไม่มีความรุนแรงสมจริง ผู้เล่นเลือกฝั่งแล้วกด **FIRE**; หนึ่งคลิกเท่ากับหนึ่ง shot คะแนนส่วนตัวเพิ่มทันทีและ pending shots ถูกเก็บใน `localStorage` ก่อนส่งเป็น batch ทุก 30 วินาที
 
@@ -126,7 +126,7 @@ POST ต้องใช้ session ID ไม่ซ้ำและอยู่ใ
 
 - Frontend ไม่ส่ง request ตอน click; มีเพียง local state/animation และส่ง batch ตาม timer 30 วินาที
 - `pending` และ personal total ถูกบันทึกหลังทุก click; refresh/offline ไม่ทำให้แต้มค้างหาย
-- ลบ pending เฉพาะหลัง server ตอบสำเร็จ และส่ง Thailand/Myanmar แยก batch เมื่อผู้เล่นเปลี่ยนฝั่งระหว่างรอบ
+- ลบ pending เฉพาะหลัง server ตอบสำเร็จ และส่ง Thailand/Cambodia แยก batch เมื่อผู้เล่นเปลี่ยนฝั่งระหว่างรอบ
 - API รับเฉพาะ JSON, exact side, integer `shots > 0`, สูงสุด 300/default, UUID session, payload เล็ก และ allowed origin
 - rate limit รวม shots และจำนวน requests ต่อ 30 วินาทีจาก hash ของ IP+session; Cloudflare WAF/Turnstile สามารถเพิ่มเมื่อพบ traffic ผิดปกติโดยไม่รบกวนผู้เล่นปกติ
 - server เพิ่ม counter เองเท่านั้น; client ไม่สามารถส่ง total score และ Durable Object serialize increments ป้องกัน race condition
@@ -138,5 +138,16 @@ cd backend
 npm test
 ```
 
-ภาพฉากสร้างด้วย ImageGen built-in จาก prompt: “original wide cartoon arcade battlefield, two toy-like tanks facing inward, Thailand left, Myanmar right, friendly non-realistic style, empty center, no UI text, no blood, no political slogans.”
+ภาพฉากสร้างด้วย ImageGen built-in จาก prompt: “original wide cartoon arcade battlefield, two toy-like tanks facing inward, Thailand left, Cambodia right, friendly non-realistic style, empty center, no UI text, no blood, no political slogans.”
+
+## Vercel worldwide sync (1,000 active players)
+
+โปรเจกต์มี Vercel Functions ที่ `api/scores.js` และ `api/shots.js` พร้อม atomic Redis counter, batch limit, rate limit ต่อ IP/session และ active-session cap 1,000 คน
+
+1. เปิด Vercel project → **Storage** → **Create Database** → เลือก **Upstash Redis**
+2. เชื่อม database กับ project นี้ ระบบจะเพิ่ม `UPSTASH_REDIS_REST_URL` และ `UPSTASH_REDIS_REST_TOKEN` ให้อัตโนมัติ
+3. Redeploy production deployment หนึ่งครั้ง
+4. ตรวจ `https://YOUR-DOMAIN/api/scores` ต้องได้ JSON ที่มี `thailand`, `cambodia`, `total`
+
+Frontend ใช้ same-origin `/api` บน Vercel โดยอัตโนมัติ จึงไม่ต้องแก้ `frontend/config.js` สำหรับ deployment นี้
 

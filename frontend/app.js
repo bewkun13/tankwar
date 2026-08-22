@@ -1,7 +1,7 @@
 const API_BASE = window.TANK_RIVALS_API || '';
-const STORAGE_KEY = 'tank-rivals-player-v2';
+const STORAGE_KEY = 'tank-rivals-player-v3';
 const BATCH_MS = 30_000;
-const defaults = { side: 'thailand', pending: { thailand: 0, myanmar: 0 }, cachedScores: { thailand: 0, myanmar: 0 }, sessionId: crypto.randomUUID() };
+const defaults = { side: 'thailand', pending: { thailand: 0, cambodia: 0 }, cachedScores: { thailand: 0, cambodia: 0 }, sessionId: crypto.randomUUID() };
 let state = loadState();
 let sessionShots = 0;
 let secondsLeft = 30;
@@ -12,7 +12,7 @@ const $ = id => document.getElementById(id);
 const format = number => Number(number || 0).toLocaleString('en-US');
 const leaders = {
   thailand: [['Sarawut',24531],['Somchai',18223],['TH_TankMaster',12456],['BangkokHero',9876],['111y',7654]],
-  myanmar: [['KaungSat',21433],['MyanmarTank',17892],['NayLin',11987],['HERO_MM',9001],['MinKhant',7321]]
+  cambodia: [['Sokha',21433],['KhmerTank',17892],['Dara',11987],['HERO_KH',9001],['Vannak',7321]]
 };
 
 function loadState(){
@@ -22,17 +22,17 @@ function loadState(){
   } catch { return { ...defaults, pending: { ...defaults.pending } }; }
 }
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-function pendingTotal(){ return state.pending.thailand + state.pending.myanmar; }
+function pendingTotal(){ return state.pending.thailand + state.pending.cambodia; }
 function renderPlayer(){
   $('totalScore').textContent = format(sessionShots);
   $('pendingShots').textContent = format(pendingTotal());
   const thai = state.side === 'thailand';
-  $('sideLabel').innerHTML = `<i class="mini-flag ${thai ? 'flag-th' : 'flag-mm'}"></i> ${thai ? 'THAILAND' : 'MYANMAR'}`;
+  $('sideLabel').innerHTML = `<i class="mini-flag ${thai ? 'flag-th' : 'flag-mm'}"></i> ${thai ? 'THAILAND' : 'CAMBODIA'}`;
 }
 function renderGlobal(){
-  const total = displayedScores.thailand + displayedScores.myanmar;
+  const total = displayedScores.thailand + displayedScores.cambodia;
   $('thScore').textContent = format(displayedScores.thailand);
-  $('mmScore').textContent = format(displayedScores.myanmar);
+  $('mmScore').textContent = format(displayedScores.cambodia);
   $('statsTotal').textContent = format(total);
 }
 function popScore(id){
@@ -40,7 +40,7 @@ function popScore(id){
 }
 function renderLeaders(){
   $('thLeaders').innerHTML = leaders.thailand.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
-  $('mmLeaders').innerHTML = leaders.myanmar.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
+  $('mmLeaders').innerHTML = leaders.cambodia.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
 }
 function fire(){
   sessionShots += 1; state.pending[state.side] += 1; displayedScores[state.side] += 1; state.cachedScores = { ...displayedScores }; saveState(); renderPlayer(); renderGlobal();
@@ -51,7 +51,7 @@ function fire(){
   const flash = document.createElement('span'); flash.className = 'muzzle';
   const tracer = document.createElement('span'); tracer.className = `tracer tracer-${state.side}`;
   const attacker = document.createElement('span'); attacker.className = `tank-fx attacker-fx attacker-${state.side}`;
-  const targetSide = state.side === 'thailand' ? 'myanmar' : 'thailand';
+  const targetSide = state.side === 'thailand' ? 'cambodia' : 'thailand';
   const impact = document.createElement('span'); impact.className = `tank-fx impact-fx impact-${targetSide}`;
   const smoke = document.createElement('span'); smoke.className = `tank-fx smoke-fx smoke-${targetSide}`;
   const particles = Array.from({ length: 8 }, (_, index) => { const spark = document.createElement('span'); spark.className = 'spark'; spark.style.setProperty('--angle', `${index * 45 + Math.random()*18}deg`); spark.style.setProperty('--distance', `${55 + Math.random()*55}px`); return spark; });
@@ -62,7 +62,7 @@ async function refreshScores(){
     const response = await fetch(`${API_BASE}/api/scores`, { cache: 'no-store' });
     if (!response.ok) throw new Error('score fetch failed');
     const data = await response.json();
-    displayedScores = { thailand:Number(data.thailand || 0) + state.pending.thailand, myanmar:Number(data.myanmar || 0) + state.pending.myanmar };
+    displayedScores = { thailand:Number(data.thailand || 0) + state.pending.thailand, cambodia:Number(data.cambodia || 0) + state.pending.cambodia };
     state.cachedScores = { ...displayedScores }; saveState(); renderGlobal();
     if (Number.isInteger(data.playersOnline)) $('online').textContent = format(data.playersOnline);
   } catch { $('syncStatus').textContent = navigator.onLine ? 'ยังเชื่อมต่อไม่ได้' : 'ออฟไลน์ — เก็บแต้มไว้แล้ว'; }
@@ -83,7 +83,7 @@ async function flushShots(){
 function tick(){ secondsLeft -= 1; if (secondsLeft <= 0) { secondsLeft = 30; flushShots(); } }
 
 $('fireButton').addEventListener('click', fire);
-$('changeSide').addEventListener('click', () => { state.side = state.side === 'thailand' ? 'myanmar' : 'thailand'; saveState(); renderPlayer(); });
+$('changeSide').addEventListener('click', () => { state.side = state.side === 'thailand' ? 'cambodia' : 'thailand'; saveState(); renderPlayer(); });
 document.addEventListener('keydown', event => { if ((event.code === 'Space' || event.code === 'Enter') && !event.repeat && event.target === document.body) { event.preventDefault(); fire(); } });
 $('howButton').addEventListener('click', () => $('howDialog').showModal());
 $('howDialog').querySelector('.close').addEventListener('click', () => $('howDialog').close());
