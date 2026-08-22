@@ -1,10 +1,11 @@
 const API_BASE = window.TANK_RIVALS_API || '';
 const STORAGE_KEY = 'tank-rivals-player-v3';
-const BATCH_MS = 30_000;
+const BATCH_MS = 10_000;
+const SYNC_SECONDS = BATCH_MS / 1000;
 const defaults = { side: 'thailand', pending: { thailand: 0, cambodia: 0 }, cachedScores: { thailand: 0, cambodia: 0 }, sessionId: crypto.randomUUID() };
 let state = loadState();
 let sessionShots = 0;
-let secondsLeft = 30;
+let secondsLeft = SYNC_SECONDS;
 let sending = false;
 let displayedScores = { ...state.cachedScores };
 
@@ -80,7 +81,7 @@ async function flushShots(){
   }
   $('syncStatus').textContent = 'ส่งคะแนนแล้ว ✓'; sending = false; refreshScores();
 }
-function tick(){ secondsLeft -= 1; if (secondsLeft <= 0) { secondsLeft = 30; flushShots(); } }
+function tick(){ secondsLeft -= 1; if (secondsLeft <= 0) { secondsLeft = SYNC_SECONDS; flushShots(); } }
 
 $('fireButton').addEventListener('click', fire);
 $('changeSide').addEventListener('click', () => { state.side = state.side === 'thailand' ? 'cambodia' : 'thailand'; saveState(); renderPlayer(); });
@@ -91,5 +92,5 @@ $('howDialog').querySelector('.got-it').addEventListener('click', () => $('howDi
 window.addEventListener('online', () => { $('syncStatus').textContent = 'กลับมาออนไลน์แล้ว'; flushShots(); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveState(); });
 window.addEventListener('pagehide', saveState);
-renderPlayer(); renderGlobal(); renderLeaders(); refreshScores(); setInterval(tick, 1000); setInterval(refreshScores, 30_000);
+renderPlayer(); renderGlobal(); renderLeaders(); refreshScores(); setInterval(tick, 1000); setInterval(refreshScores, BATCH_MS);
 
