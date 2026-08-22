@@ -34,16 +34,23 @@ function renderGlobal(){
   $('mmScore').textContent = format(displayedScores.myanmar);
   $('totalScore').textContent = $('statsTotal').textContent = format(total);
 }
+function popScore(id){
+  const element = $(id); element.classList.remove('score-pop'); void element.offsetWidth; element.classList.add('score-pop');
+}
 function renderLeaders(){
   $('thLeaders').innerHTML = leaders.thailand.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
   $('mmLeaders').innerHTML = leaders.myanmar.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
 }
 function fire(){
   state.totalShots += 1; state.pending[state.side] += 1; displayedScores[state.side] += 1; saveState(); renderPlayer(); renderGlobal();
+  popScore('yourShots'); popScore(state.side === 'thailand' ? 'thScore' : 'mmScore'); popScore('totalScore');
+  $('game').classList.remove('arena-hit'); void $('game').offsetWidth; $('game').classList.add('arena-hit');
   $('fireButton').classList.add('firing'); setTimeout(() => $('fireButton').classList.remove('firing'), 90);
   const plus = document.createElement('span'); plus.className = 'plus-one'; plus.textContent = '+1'; plus.style.marginLeft = `${Math.random()*80-40}px`;
   const flash = document.createElement('span'); flash.className = 'muzzle';
-  $('effects').append(plus, flash); setTimeout(() => { plus.remove(); flash.remove(); }, 750);
+  const tracer = document.createElement('span'); tracer.className = `tracer tracer-${state.side}`;
+  const particles = Array.from({ length: 8 }, (_, index) => { const spark = document.createElement('span'); spark.className = 'spark'; spark.style.setProperty('--angle', `${index * 45 + Math.random()*18}deg`); spark.style.setProperty('--distance', `${55 + Math.random()*55}px`); return spark; });
+  $('effects').append(plus, flash, tracer, ...particles); setTimeout(() => { plus.remove(); flash.remove(); tracer.remove(); particles.forEach(p => p.remove()); }, 800);
 }
 async function refreshScores(){
   try {
