@@ -1,0 +1,5 @@
+{
+  "name":"tank-rivals","private":true,
+  "scripts":{"frontend":"npx wrangler pages dev frontend --port 8788","backend":"npm --prefix backend run dev","test":"npm --prefix backend test","deploy:pages":"npx wrangler pages deploy frontend --project-name tank-rivals","deploy:worker":"npm --prefix backend run deploy"}
+}
+

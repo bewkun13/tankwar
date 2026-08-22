@@ -1,0 +1,8 @@
+{
+  "name": "tank-rivals-worker",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "wrangler dev", "deploy": "wrangler deploy", "test": "node --test", "db:local": "wrangler d1 execute tank-rivals-db --local --file=./schema.sql", "db:remote": "wrangler d1 execute tank-rivals-db --remote --file=./schema.sql" },
+  "devDependencies": { "wrangler": "^4.30.0" }
+}
+

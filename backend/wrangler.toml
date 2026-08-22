@@ -1,0 +1,26 @@
+name = "tank-rivals-api"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+[vars]
+ALLOWED_ORIGIN = "http://localhost:8788"
+MAX_BATCH_SHOTS = "300"
+RATE_WINDOW_SECONDS = "30"
+
+[[durable_objects.bindings]]
+name = "SCORE_COUNTER"
+class_name = "ScoreCounter"
+
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ScoreCounter", "RateLimiter"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tank-rivals-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
