@@ -24,7 +24,7 @@ function loadState(){
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function pendingTotal(){ return state.pending.thailand + state.pending.myanmar; }
 function renderPlayer(){
-  $('yourShots').textContent = format(sessionShots);
+  $('totalScore').textContent = format(sessionShots);
   $('pendingShots').textContent = format(pendingTotal());
   const thai = state.side === 'thailand';
   $('sideLabel').innerHTML = `<i class="mini-flag ${thai ? 'flag-th' : 'flag-mm'}"></i> ${thai ? 'THAILAND' : 'MYANMAR'}`;
@@ -33,7 +33,7 @@ function renderGlobal(){
   const total = displayedScores.thailand + displayedScores.myanmar;
   $('thScore').textContent = format(displayedScores.thailand);
   $('mmScore').textContent = format(displayedScores.myanmar);
-  $('totalScore').textContent = $('statsTotal').textContent = format(total);
+  $('statsTotal').textContent = format(total);
 }
 function popScore(id){
   const element = $(id); element.classList.remove('score-pop'); void element.offsetWidth; element.classList.add('score-pop');
@@ -44,14 +44,18 @@ function renderLeaders(){
 }
 function fire(){
   sessionShots += 1; state.pending[state.side] += 1; displayedScores[state.side] += 1; state.cachedScores = { ...displayedScores }; saveState(); renderPlayer(); renderGlobal();
-  popScore('yourShots'); popScore(state.side === 'thailand' ? 'thScore' : 'mmScore'); popScore('totalScore');
+  popScore('totalScore'); popScore(state.side === 'thailand' ? 'thScore' : 'mmScore');
   $('game').classList.remove('arena-hit'); void $('game').offsetWidth; $('game').classList.add('arena-hit');
   $('fireButton').classList.add('firing'); setTimeout(() => $('fireButton').classList.remove('firing'), 90);
   const plus = document.createElement('span'); plus.className = 'plus-one'; plus.textContent = '+1'; plus.style.marginLeft = `${Math.random()*80-40}px`;
   const flash = document.createElement('span'); flash.className = 'muzzle';
   const tracer = document.createElement('span'); tracer.className = `tracer tracer-${state.side}`;
+  const attacker = document.createElement('span'); attacker.className = `tank-fx attacker-fx attacker-${state.side}`;
+  const targetSide = state.side === 'thailand' ? 'myanmar' : 'thailand';
+  const impact = document.createElement('span'); impact.className = `tank-fx impact-fx impact-${targetSide}`;
+  const smoke = document.createElement('span'); smoke.className = `tank-fx smoke-fx smoke-${targetSide}`;
   const particles = Array.from({ length: 8 }, (_, index) => { const spark = document.createElement('span'); spark.className = 'spark'; spark.style.setProperty('--angle', `${index * 45 + Math.random()*18}deg`); spark.style.setProperty('--distance', `${55 + Math.random()*55}px`); return spark; });
-  $('effects').append(plus, flash, tracer, ...particles); setTimeout(() => { plus.remove(); flash.remove(); tracer.remove(); particles.forEach(p => p.remove()); }, 800);
+  $('effects').append(plus, flash, tracer, attacker, impact, smoke, ...particles); setTimeout(() => { plus.remove(); flash.remove(); tracer.remove(); attacker.remove(); impact.remove(); smoke.remove(); particles.forEach(p => p.remove()); }, 900);
 }
 async function refreshScores(){
   try {

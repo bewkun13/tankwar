@@ -42,3 +42,23 @@
 @media(max-width:850px){.tracer-thailand{animation-name:tracer-left-mobile}.tracer-myanmar{animation-name:tracer-right-mobile}@keyframes tracer-left-mobile{to{opacity:0;transform:translateX(-220px) rotate(180deg) scale(.4)}}@keyframes tracer-right-mobile{to{opacity:0;transform:translateX(220px) scale(.4)}}}
 @media(prefers-reduced-motion:reduce){.score-pop,.arena-hit,.tracer,.spark,.effects::after{animation:none}}
 
+/* Tank, flag and battlefield reactions */
+.arena::after{content:"";position:absolute;inset:42% -20% -5%;z-index:1;pointer-events:none;background:repeating-linear-gradient(100deg,transparent 0 13%,rgba(232,245,255,.09) 16%,transparent 21%);filter:blur(18px);animation:mist-drift 16s linear infinite}
+.flag{transform-origin:left center;animation:flag-wave 1.65s ease-in-out infinite;will-change:transform,filter}
+.mini-flag{animation:mini-flag-wave 1.35s ease-in-out infinite}
+.tank-fx{position:absolute;z-index:3;pointer-events:none}
+.attacker-fx{bottom:112px;width:290px;height:190px;border-radius:50%;background:radial-gradient(circle at 50% 45%,rgba(255,235,128,.7),rgba(255,113,31,.22) 35%,transparent 68%);filter:blur(2px);animation:attacker-recoil .48s ease-out forwards}
+.attacker-thailand{left:5%;transform-origin:left center}.attacker-myanmar{right:5%;transform-origin:right center}
+.impact-fx{bottom:135px;width:170px;height:170px;border:8px solid rgba(255,221,90,.9);border-radius:50%;box-shadow:0 0 25px #ff712c,inset 0 0 28px #ff9d2d;animation:impact-ring .58s ease-out forwards}
+.impact-thailand{left:13%}.impact-myanmar{right:13%}
+.smoke-fx{bottom:170px;width:110px;height:85px;border-radius:50%;background:radial-gradient(circle at 35% 55%,rgba(238,244,240,.72),rgba(87,101,99,.48) 45%,transparent 70%);filter:blur(5px);animation:smoke-rise .9s ease-out forwards}
+.smoke-thailand{left:17%}.smoke-myanmar{right:17%}
+@keyframes flag-wave{0%,100%{transform:perspective(120px) rotateY(-7deg) skewY(0);filter:brightness(1)}50%{transform:perspective(120px) rotateY(12deg) skewY(-2deg);filter:brightness(1.18)}}
+@keyframes mini-flag-wave{0%,100%{transform:skewY(-2deg) scaleX(.96)}50%{transform:skewY(2deg) scaleX(1.05)}}
+@keyframes mist-drift{from{transform:translateX(-10%)}to{transform:translateX(18%)}}
+@keyframes attacker-recoil{0%{opacity:1;scale:.6}35%{opacity:.95;scale:1.12;translate:0 -5px}100%{opacity:0;scale:1.35;translate:0 8px}}
+@keyframes impact-ring{0%{opacity:1;transform:scale(.2)}55%{opacity:.9;transform:scale(1.05)}100%{opacity:0;transform:scale(1.55)}}
+@keyframes smoke-rise{0%{opacity:.9;transform:translateY(20px) scale(.45)}100%{opacity:0;transform:translateY(-105px) scale(1.7)}}
+@media(max-width:850px){.attacker-fx{bottom:205px;width:150px;height:110px}.attacker-thailand{left:-3%}.attacker-myanmar{right:-3%}.impact-fx{bottom:220px;width:95px;height:95px}.impact-thailand{left:4%}.impact-myanmar{right:4%}.smoke-fx{bottom:240px;width:70px;height:55px}.smoke-thailand{left:8%}.smoke-myanmar{right:8%}}
+@media(prefers-reduced-motion:reduce){.arena::after,.flag,.mini-flag,.tank-fx{animation:none}}
+
