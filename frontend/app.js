@@ -1,10 +1,11 @@
 const API_BASE = window.TANK_RIVALS_API || '';
-const STORAGE_KEY = 'tank-rivals-player-v1';
+const STORAGE_KEY = 'tank-rivals-player-v2';
 const BATCH_MS = 30_000;
 const defaults = { side: 'thailand', totalShots: 0, pending: { thailand: 0, myanmar: 0 }, sessionId: crypto.randomUUID() };
 let state = loadState();
 let secondsLeft = 30;
 let sending = false;
+let displayedScores = { thailand: 0, myanmar: 0 };
 
 const $ = id => document.getElementById(id);
 const format = number => Number(number || 0).toLocaleString('en-US');
@@ -27,12 +28,18 @@ function renderPlayer(){
   const thai = state.side === 'thailand';
   $('sideLabel').innerHTML = `<i class="mini-flag ${thai ? 'flag-th' : 'flag-mm'}"></i> ${thai ? 'THAILAND' : 'MYANMAR'}`;
 }
+function renderGlobal(){
+  const total = displayedScores.thailand + displayedScores.myanmar;
+  $('thScore').textContent = format(displayedScores.thailand);
+  $('mmScore').textContent = format(displayedScores.myanmar);
+  $('totalScore').textContent = $('statsTotal').textContent = format(total);
+}
 function renderLeaders(){
   $('thLeaders').innerHTML = leaders.thailand.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
   $('mmLeaders').innerHTML = leaders.myanmar.map(([n,s]) => `<li>${n}<span>${format(s)}</span></li>`).join('');
 }
 function fire(){
-  state.totalShots += 1; state.pending[state.side] += 1; saveState(); renderPlayer();
+  state.totalShots += 1; state.pending[state.side] += 1; displayedScores[state.side] += 1; saveState(); renderPlayer(); renderGlobal();
   $('fireButton').classList.add('firing'); setTimeout(() => $('fireButton').classList.remove('firing'), 90);
   const plus = document.createElement('span'); plus.className = 'plus-one'; plus.textContent = '+1'; plus.style.marginLeft = `${Math.random()*80-40}px`;
   const flash = document.createElement('span'); flash.className = 'muzzle';
@@ -43,8 +50,8 @@ async function refreshScores(){
     const response = await fetch(`${API_BASE}/api/scores`, { cache: 'no-store' });
     if (!response.ok) throw new Error('score fetch failed');
     const data = await response.json();
-    $('thScore').textContent = format(data.thailand); $('mmScore').textContent = format(data.myanmar);
-    $('totalScore').textContent = $('statsTotal').textContent = format(data.total ?? data.thailand + data.myanmar);
+    displayedScores = { thailand:Number(data.thailand || 0) + state.pending.thailand, myanmar:Number(data.myanmar || 0) + state.pending.myanmar };
+    renderGlobal();
     if (Number.isInteger(data.playersOnline)) $('online').textContent = format(data.playersOnline);
   } catch { $('syncStatus').textContent = navigator.onLine ? 'ยังเชื่อมต่อไม่ได้' : 'ออฟไลน์ — เก็บแต้มไว้แล้ว'; }
 }
@@ -61,7 +68,7 @@ async function flushShots(){
   }
   $('syncStatus').textContent = 'ส่งคะแนนแล้ว ✓'; sending = false; refreshScores();
 }
-function tick(){ secondsLeft -= 1; if (secondsLeft <= 0) { secondsLeft = 30; flushShots(); } $('countdown').textContent = `00:${String(secondsLeft).padStart(2,'0')}`; }
+function tick(){ secondsLeft -= 1; if (secondsLeft <= 0) { secondsLeft = 30; flushShots(); } }
 
 $('fireButton').addEventListener('click', fire);
 $('changeSide').addEventListener('click', () => { state.side = state.side === 'thailand' ? 'myanmar' : 'thailand'; saveState(); renderPlayer(); });
@@ -72,5 +79,5 @@ $('howDialog').querySelector('.got-it').addEventListener('click', () => $('howDi
 window.addEventListener('online', () => { $('syncStatus').textContent = 'กลับมาออนไลน์แล้ว'; flushShots(); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveState(); });
 window.addEventListener('pagehide', saveState);
-renderPlayer(); renderLeaders(); refreshScores(); setInterval(tick, 1000); setInterval(refreshScores, 30_000);
+renderPlayer(); renderGlobal(); renderLeaders(); refreshScores(); setInterval(tick, 1000); setInterval(refreshScores, 30_000);
 

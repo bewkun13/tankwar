@@ -21,12 +21,12 @@
   <main>
     <section class="arena" id="game" aria-label="พื้นที่เกม">
       <div class="score-row">
-        <div class="team-score thailand"><div class="flag flag-th" aria-hidden="true"></div><div><span>THAILAND</span><strong id="thScore">6,242,158</strong></div></div>
-        <div class="total-block"><span>TOTAL SHOTS</span><strong id="totalScore">12,450,768</strong><small>อัปเดตคะแนนรวมทุก 30 วินาที</small></div>
-        <div class="team-score myanmar"><div><span>MYANMAR</span><strong id="mmScore">6,208,610</strong></div><div class="flag flag-mm" aria-hidden="true"><i>★</i></div></div>
+        <div class="team-score thailand"><div class="flag flag-th" aria-hidden="true"></div><div><span>THAILAND</span><strong id="thScore">0</strong></div></div>
+        <div class="total-block"><span>TOTAL SHOTS</span><strong id="totalScore">0</strong><small>คะแนนบนหน้าจอเพิ่มทันที • Sync ทุก 30 วินาที</small></div>
+        <div class="team-score myanmar"><div><span>MYANMAR</span><strong id="mmScore">0</strong></div><div class="flag flag-mm" aria-hidden="true"><i>★</i></div></div>
       </div>
 
-      <div class="countdown" aria-live="polite"><span>NEXT UPDATE IN</span><strong id="countdown">00:30</strong><small id="syncStatus">พร้อมยิง</small></div>
+      <div class="sync-pill" aria-live="polite" id="syncStatus">พร้อมยิง • ระบบจะ Sync ทุก 30 วินาที</div>
       <div class="fire-zone">
         <div class="side-card card"><span>YOUR SIDE</span><strong id="sideLabel"><i class="mini-flag flag-th"></i> THAILAND</strong><button id="changeSide">⇄ &nbsp; CHANGE SIDE</button></div>
         <button class="fire-button" id="fireButton" aria-label="ยิงหนึ่งครั้ง"><span class="shell">➤</span><b>FIRE!</b><small>1 CLICK = 1 SHOT</small></button>
@@ -37,7 +37,7 @@
 
     <section class="stats" id="stats">
       <article class="leaderboard"><h2>TOP SHOOTERS <span>(THAILAND)</span></h2><ol id="thLeaders"></ol></article>
-      <article class="global"><h2>GLOBAL STATISTICS</h2><div class="metrics"><div><b>●●●</b><strong id="online">12,543</strong><span>Players Online</span></div><div><b>◎</b><strong id="statsTotal">12,450,768</strong><span>Total Shots</span></div><div><b>◷</b><strong>00:30</strong><span>Update Interval</span></div></div></article>
+      <article class="global"><h2>GLOBAL STATISTICS</h2><div class="metrics"><div><b>●●●</b><strong id="online">0</strong><span>Players Online</span></div><div><b>◎</b><strong id="statsTotal">0</strong><span>Total Shots</span></div><div><b>↻</b><strong>30 SEC</strong><span>Auto Sync</span></div></div></article>
       <article class="leaderboard mm"><h2>TOP SHOOTERS <span>(MYANMAR)</span></h2><ol id="mmLeaders"></ol></article>
     </section>
   </main>

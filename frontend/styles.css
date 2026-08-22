@@ -6,3 +6,22 @@
 @media(max-width:460px){.how{font-size:12px;padding:7px}.brand{font-size:23px}.arena{min-height:690px}.total-block>span{font-size:25px}.total-block>strong{font-size:46px}.team-score span{font-size:19px}.team-score strong{font-size:20px}.countdown{top:205px}.fire-zone{bottom:18px}.fire-button{width:165px;height:165px;border-width:7px}.fire-button .shell{font-size:32px}.fire-button b{font-size:37px}.side-card button{font-size:12px;padding:7px}.stats article{padding:17px 18px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}.plus-one,.muzzle{animation:none}.fire-button{transition:none}}
 
+/* Live arcade motion */
+.arena{animation:arena-drift 14s ease-in-out infinite alternate}
+.arena::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(110deg,transparent 15%,rgba(255,255,255,.11) 40%,transparent 62%);transform:translateX(-120%);animation:sun-sweep 9s ease-in-out infinite}
+.arena>*{z-index:2}
+.score-row,.fire-zone,.sync-pill,.effects{position:absolute}
+.score-row{position:relative}
+.sync-pill{top:255px;left:50%;transform:translateX(-50%);padding:8px 18px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(8,16,22,.74);color:#9ee68a;font-size:13px;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.fire-button{animation:fire-breathe 1.8s ease-in-out infinite}
+.fire-button::after{content:"";position:absolute;inset:-12px;border:3px solid rgba(255,208,88,.72);border-radius:50%;opacity:0;transform:scale(.85)}
+.fire-button.firing::after{animation:fire-ring .55s ease-out}
+.fire-button.firing{animation:none;filter:brightness(1.25) saturate(1.2)}
+@keyframes arena-drift{from{background-position:49% center}to{background-position:51% center}}
+@keyframes sun-sweep{0%,35%{transform:translateX(-120%);opacity:0}50%{opacity:1}75%,100%{transform:translateX(120%);opacity:0}}
+@keyframes fire-breathe{0%,100%{box-shadow:inset 0 -12px 0 rgba(76,0,0,.25),0 0 24px #ff8a25;transform:scale(1)}50%{box-shadow:inset 0 -12px 0 rgba(76,0,0,.25),0 0 46px #ffc04b;transform:scale(1.025)}}
+@keyframes fire-ring{0%{opacity:1;transform:scale(.82)}100%{opacity:0;transform:scale(1.3)}}
+@media(max-width:850px){.sync-pill{top:222px;font-size:11px}.arena{animation:none}}
+@media(max-width:460px){.sync-pill{top:190px;max-width:92%;overflow:hidden;text-overflow:ellipsis}}
+@media(prefers-reduced-motion:reduce){.arena,.arena::before,.fire-button{animation:none}}
+
