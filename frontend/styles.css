@@ -98,6 +98,8 @@
     min-height:560px;
     max-height:none;
     padding:14px 10px max(12px,env(safe-area-inset-bottom));
+    background-image:linear-gradient(180deg,rgba(12,50,70,.04) 42%,rgba(7,11,13,.34) 100%),url('./assets/battlefield-mobile-v2.jpg');
+    background-size:cover;
     background-position:center center;
   }
   .score-row{top:12px;left:10px;right:10px;width:auto}
@@ -109,7 +111,7 @@
   .team-score strong{font-size:clamp(18px,5.5vw,23px)}
   .flag{width:42px;height:28px}
   .flag-mm i{font-size:18px}
-  .sync-pill{top:174px;max-width:88%;white-space:nowrap}
+  .sync-pill{top:244px;max-width:88%;white-space:nowrap;z-index:5}
   .fire-zone{bottom:max(14px,env(safe-area-inset-bottom));gap:8px;width:calc(100% - 20px)}
   .fire-button{width:clamp(146px,42vw,180px);height:clamp(146px,42vw,180px)}
   .fire-button b{font-size:clamp(34px,10vw,42px)}
@@ -124,7 +126,7 @@
   .arena{min-height:500px}
   .score-row{top:7px}
   .team-score{padding:4px 6px}
-  .sync-pill{top:150px}
+  .sync-pill{top:218px}
   .fire-zone{bottom:8px}
   .fire-button{width:138px;height:138px;border-width:6px}
   .fire-button .shell{font-size:27px}
