@@ -99,7 +99,7 @@
     max-height:none;
     padding:14px 10px max(12px,env(safe-area-inset-bottom));
     background-image:linear-gradient(180deg,rgba(12,50,70,.04) 42%,rgba(7,11,13,.34) 100%),url('./assets/battlefield-mobile-v2.jpg');
-    background-size:cover;
+    background-size:100% 100%;
     background-position:center center;
   }
   .score-row{top:12px;left:10px;right:10px;width:auto}
